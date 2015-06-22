@@ -82,6 +82,7 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
     
+    'south',
     'blogango',
     'pingback',
     'django_xmlrpc',
