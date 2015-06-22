@@ -3,7 +3,13 @@ from django.core.management.base import NoArgsCommand
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
-from django.contrib.auth.models import User
+# Safe User import for Django < 1.5
+try:
+    from django.contrib.auth import get_user_model
+except ImportError:
+    from django.contrib.auth.models import User
+else:
+    User = get_user_model()
 from django.contrib.sites.models import Site
 
 

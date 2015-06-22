@@ -27,6 +27,10 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = True
 
+USE_TZ = True
+
+TIME_ZONE = 'Europe/Rome'
+
 MEDIA_ROOT = os.path.join(SITE_ROOT, 'media/')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a

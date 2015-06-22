@@ -1,13 +1,20 @@
 from django.test  import TestCase
 from django.test.client import Client
 from datetime import datetime
-from django.contrib.auth.models import User
+
 from django.core.urlresolvers import reverse
 from django.contrib.staticfiles import finders
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.management import call_command
 from django.core import mail
 
+# Safe User import for Django < 1.5
+try:
+    from django.contrib.auth import get_user_model
+except ImportError:
+    from django.contrib.auth.models import User
+else:
+    User = get_user_model()
 
 from taggit.models import Tag
 from .models import Blog, BlogEntry, Comment

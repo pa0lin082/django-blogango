@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from django.db import models
-# from django.contrib.auth.models import User
+
 from django.conf import settings
 from django.template.defaultfilters import slugify
 from django.core.urlresolvers import reverse
@@ -83,7 +83,7 @@ class BlogEntry(models.Model):
                        markup_choices=getattr(settings, "MARKUP_RENDERERS",
                                               DEFAULT_MARKUP_TYPES))
     summary = models.TextField()
-    created_on = models.DateTimeField(default=datetime.max, editable=False)
+    created_on = models.DateTimeField(auto_now_add=True, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, unique=False)
     is_page = models.BooleanField(default=False)
     is_published = models.BooleanField(default=True)
@@ -129,10 +129,10 @@ class BlogEntry(models.Model):
         if not self.meta_description:
             self.meta_description = self.summary
 
-        if self.is_published:
-            #default value for created_on is datetime.max whose year is 9999
-            if self.created_on.year == 9999:
-                self.created_on = self.publish_date
+        # if self.is_published:
+        #     #default value for created_on is datetime.max whose year is 9999
+        #     if self.created_on.year == 9999:
+        #         self.created_on = self.publish_date
         # Call the "real" save() method.
         super(BlogEntry, self).save(*args, **kwargs)
 

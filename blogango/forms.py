@@ -1,6 +1,14 @@
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from django import forms
 from django.contrib.admin import widgets
+
+# Safe User import for Django < 1.5
+try:
+    from django.contrib.auth import get_user_model
+except ImportError:
+    from django.contrib.auth.models import User
+else:
+    User = get_user_model()
 
 from blogango.models import Blog, BlogRoll, BlogEntry
 
