@@ -141,7 +141,7 @@ class Migration(SchemaMigration):
             'Meta': {'ordering': "['-created_on']", 'object_name': 'BlogEntry'},
             '_text_rendered': ('django.db.models.fields.TextField', [], {}),
             'comments_allowed': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': settings.AUTH_USER_MODEL}),
+            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['%s']" % settings.AUTH_USER_MODEL}),
             'created_on': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.max.replace(tzinfo=datetime.timezone.utc)'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_page': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -166,7 +166,7 @@ class Migration(SchemaMigration):
         u'blogango.comment': {
             'Meta': {'ordering': "['created_on']", 'object_name': 'Comment'},
             'comment_for': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['blogango.BlogEntry']"}),
-            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': settings.AUTH_USER_MODEL, 'null': 'True', 'blank': 'True'}),
+            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['%s']" % settings.AUTH_USER_MODEL, 'null': 'True', 'blank': 'True'}),
             'created_on': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'email_id': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
