@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta
 from django.db import models
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from django.conf import settings
 from django.template.defaultfilters import slugify
 from django.core.urlresolvers import reverse
+from django.conf import settings
 
 from taggit.managers import TaggableManager
 from markupfield.fields import MarkupField
@@ -84,7 +85,7 @@ class BlogEntry(models.Model):
                                               DEFAULT_MARKUP_TYPES))
     summary = models.TextField()
     created_on = models.DateTimeField(default=datetime.max, editable=False)
-    created_by = models.ForeignKey(User, unique=False)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, unique=False)
     is_page = models.BooleanField(default=False)
     is_published = models.BooleanField(default=True)
     publish_date = models.DateTimeField(null=True)
@@ -211,7 +212,7 @@ class Comment(BaseComment):
     user_agent: User agent of the commenter
     """
 
-    created_by = models.ForeignKey(User, unique=False, blank=True, null=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, unique=False, blank=True, null=True)
     email_id = models.EmailField()
     is_spam = models.BooleanField(default=False)
     is_public = models.NullBooleanField(null=True, blank=True)
