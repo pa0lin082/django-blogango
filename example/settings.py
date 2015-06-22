@@ -82,6 +82,7 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
     
+    'accounts',
     'south',
     'blogango',
     'pingback',
@@ -105,6 +106,7 @@ except ImportError:
 
 STATIC_URL = "/static/"
 
+AUTH_USER_MODEL = 'accounts.User'
 
 # details to send mail
 # EMAIL_HOST = ''

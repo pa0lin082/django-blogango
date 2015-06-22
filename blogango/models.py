@@ -4,7 +4,6 @@ from django.db import models
 from django.conf import settings
 from django.template.defaultfilters import slugify
 from django.core.urlresolvers import reverse
-from django.conf import settings
 
 from taggit.managers import TaggableManager
 from markupfield.fields import MarkupField
