@@ -4,6 +4,7 @@ from blogango.models import Blog, BlogEntry, Comment, BlogRoll, Reaction
 
 class BlogEntryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
+    raw_id_fields = ('created_by',)
     
 admin.site.register(Blog)
 admin.site.register(BlogEntry, BlogEntryAdmin)
