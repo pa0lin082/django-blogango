@@ -446,6 +446,7 @@ class BlogEntryMonthArchiveView(MonthArchiveView):
     date_field = 'created_on'
     template_name = 'blogango/archive_view.html'
     allow_empty = True
+    month_format = '%m'
 
     def get_context_data(self, **kwargs):
         context = super(BlogEntryMonthArchiveView, self).get_context_data(**kwargs)

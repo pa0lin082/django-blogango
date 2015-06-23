@@ -10,6 +10,8 @@ except ImportError:
 else:
     User = get_user_model()
 
+from ckeditor.widgets import CKEditorWidget
+
 from blogango.models import Blog, BlogRoll, BlogEntry
 
 
@@ -28,7 +30,8 @@ class EntryForm(forms.ModelForm):
     title = forms.CharField(max_length=100,
                             required=False,
                             widget=forms.TextInput(attrs={'size': '40'}))
-    text = forms.CharField(widget=WideTextArea(attrs={'class': 'resizable'}))
+    # text = forms.CharField(widget=WideTextArea(attrs={'class': 'resizable'}))
+    text = forms.CharField(widget=CKEditorWidget())
 
     class Meta:
         model = BlogEntry

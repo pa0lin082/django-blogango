@@ -85,7 +85,8 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
-    
+
+    'ckeditor',
     'accounts',
     'south',
     'blogango',
@@ -112,6 +113,9 @@ STATIC_URL = "/static/"
 
 AUTH_USER_MODEL = 'accounts.User'
 
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+# CKEDITOR_JQUERY_URL = '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js'
 # details to send mail
 # EMAIL_HOST = ''
 # EMAIL_BACKEND = ''

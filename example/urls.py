@@ -7,6 +7,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     ('^admin/', include(admin.site.urls)),
     (r'^blog/', include('blogango.urls')),
+    (r'^ckeditor/', include('ckeditor.urls')),
 )
 
 if settings.DEBUG:
