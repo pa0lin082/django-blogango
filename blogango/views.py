@@ -260,6 +260,12 @@ class IndexView(generic.ListView):
         entries = BlogEntry.objects.filter(is_page=False)
         return entries
 
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context.update(_get_sidebar_objects(self.request))
+        return context
+
+
 index = IndexView.as_view()
 
 def check_comment_spam(request, comment):
