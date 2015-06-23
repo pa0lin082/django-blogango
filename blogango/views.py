@@ -337,6 +337,7 @@ class DetailsView(Handle404Mixin, generic.DetailView):
         payload = {'comments': comments,
                'reactions': reactions, 'comment_form': comment_f}
         context.update(payload)
+        context.update(_get_sidebar_objects(self.request))
         return context
 
     def post(self, *args, **kwargs):
@@ -392,6 +393,7 @@ class TagDetails(generic.ListView):
     def get_context_data(self, *args, **kwargs):
         context = super(TagDetails, self).get_context_data(**kwargs)
         context['tag'] = self.kwargs['tag']
+        context.update(_get_sidebar_objects(self.request))
         return context
 
 tag_details = TagDetails.as_view()
@@ -441,6 +443,7 @@ class AuthorView(generic.ListView):
     def get_context_data(self, *args, **kwargs):
         context = super(AuthorView, self).get_context_data(**kwargs)
         context['author'] = self.kwargs['author']
+        context.update(_get_sidebar_objects(self.request))
         return context
 
 
