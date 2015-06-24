@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from django.db import models
+from django.db.utils import OperationalError
 
 from django.conf import settings
 from django.template.defaultfilters import slugify
@@ -8,6 +9,12 @@ from django.core.urlresolvers import reverse
 from taggit.managers import TaggableManager
 from markupfield.fields import MarkupField
 from markupfield.markup import DEFAULT_MARKUP_TYPES
+
+# import urllib2
+from BeautifulSoup import BeautifulSoup
+from sorl.thumbnail import get_thumbnail
+
+from  django.core.validators import URLValidator
 
 
 class BlogManager(models.Manager):
@@ -173,6 +180,43 @@ class BlogEntry(models.Model):
         ).order_by('-created_on')
         return cmnts
 
+    def preview_image(self):
+        page = BeautifulSoup(self.text.rendered)
+        images = page.findAll('img')
+        if len(images):
+            src_image = images[0].get('src')
+            src_image_path = None
+
+            url_validate = URLValidator()
+            try:
+                url_validate(src_image)
+                src_image_path = src_image
+            except Exception as e:
+                print e
+
+            if not src_image_path:
+                src_image = src_image.replace(settings.MEDIA_URL,'')
+                src_image_path = settings.MEDIA_ROOT + src_image
+                src_image_path = open(src_image_path)
+
+            try:
+                im = get_thumbnail(src_image_path, '600x200', crop='center', quality=99)
+                return im.url
+
+            except OperationalError:
+                # raise Exception('No solr activated')
+                return None
+            except Exception as e:
+                print e
+
+        return None
+
+    def preview_text(self):
+        page = BeautifulSoup(self.text.rendered)
+        for image in page.findAll('img'):
+            image.extract()
+
+        return page.renderContents()
 
 class CommentManager(models.Manager):
     def get_queryset(self):

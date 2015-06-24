@@ -93,6 +93,7 @@ INSTALLED_APPS = (
     'pingback',
     'django_xmlrpc',
     'taggit',
+    'sorl.thumbnail',
 )
 
 try:

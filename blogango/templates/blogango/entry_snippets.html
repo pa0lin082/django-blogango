@@ -26,7 +26,11 @@
 	{% if post_detail %}
 	  <p>{{ entry.text|safe }}</p>
 	{% else %}
-	  <p>{{ entry.text|truncatewords_html:100|safe }} </p>
+{#        {{ entry.preview_image }}#}
+        {% if entry.preview_image %}
+            <img width="100%" src='{{ entry.preview_image }}'>
+        {% endif %}
+	  <p>{{ entry.preview_text|truncatewords_html:100|safe }} </p>
 	{% endif %}
 	{% if not post_detail %}
 	  <a href="{{ entry.get_absolute_url }}" class="moreinfo">more info..</a>
