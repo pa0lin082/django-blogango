@@ -216,6 +216,12 @@ class BlogEntry(models.Model):
         for image in page.findAll('img'):
             image.extract()
 
+        for h_size in range(1,6):
+            for tag in page.findAll('h%s' % h_size):
+                tag.name = 'b'
+
+
+
         return page.renderContents()
 
 class CommentManager(models.Manager):
