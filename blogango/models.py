@@ -11,6 +11,7 @@ from markupfield.fields import MarkupField
 from markupfield.markup import DEFAULT_MARKUP_TYPES
 
 # import urllib2
+import os
 from BeautifulSoup import BeautifulSoup
 from sorl.thumbnail import get_thumbnail
 
@@ -196,7 +197,8 @@ class BlogEntry(models.Model):
 
             if not src_image_path:
                 src_image = src_image.replace(settings.MEDIA_URL,'')
-                src_image_path = settings.MEDIA_ROOT + src_image
+                src_image_path = os.path.join(settings.MEDIA_ROOT,src_image)
+                # src_image_path = settings.MEDIA_ROOT + src_image
                 src_image_path = open(src_image_path)
 
             try:

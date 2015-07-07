@@ -1,3 +1,6 @@
+{% load blogango_filters %}
+{% blogango_extra_context %}
+
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -20,6 +23,8 @@
 
 </head>
 <body onload="pretty_print()">
+
+
 <!--BASE CONTAINER STARTS-->
 <div id="mainpage_bg">
   <!--PAGE CONTAINER STARTS-->
@@ -50,6 +55,7 @@
     <!-- CONTENT BLOCK STARTS HERE -->
     <div id="content_block">
       <div class="leftpanel">
+      {{ archive_months }}
 		{% block content %}
 
 		{% endblock %}

@@ -16,6 +16,8 @@ class BlogangoContext(template.Node):
         pass
 
     def render(self, context):
+
+        # print 'render'
         #only one blog must be present
         blog = Blog.objects.get_blog()
         tags = Tag.objects.annotate(num_tagged_entries=Count('taggit_taggeditem_items')).filter(num_tagged_entries__gt=2)
@@ -30,6 +32,8 @@ class BlogangoContext(template.Node):
                          'blog': blog,
                          'site': site,
                          }
+
+        # print extra_context
         context.update(extra_context)
         return ''
 
@@ -52,6 +56,13 @@ def twitterize(token):
 twitterize.is_safe = True
 
 register.tag('blogango_extra_context', blogango_extra_context)
+
+# @register.simple_tag(takes_context=True)
+# def blogango_extra_context(context):
+#     print 'blogango_extra_context'
+    # print context
+    # return BlogangoContext().render(context)
+
 
 @register.filter
 def truncate_chars(ip_string, length=30):
