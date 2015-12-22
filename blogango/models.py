@@ -226,6 +226,34 @@ class BlogEntry(models.Model):
 
         return page.renderContents()
 
+    def text_with_abs_url(self,request=None):
+
+        page = BeautifulSoup(self.text.rendered)
+        for image in page.findAll('img'):
+            src_image = image.get('src')
+            url_validate = URLValidator()
+            try:
+                url_validate(src_image)
+            except Exception as e:
+                print e
+                src_image = request.build_absolute_uri(src_image)
+
+            image['src'] = src_image
+
+        for a in page.findAll('a'):
+            href = a.get('href')
+            url_validate = URLValidator()
+            try:
+                url_validate(href)
+
+            except Exception as e:
+                href = request.build_absolute_uri(href)
+            a['href'] = href
+
+
+        return page.renderContents()
+
+
 class CommentManager(models.Manager):
     def get_queryset(self):
         return super(CommentManager, self).get_queryset().filter(is_public=True)

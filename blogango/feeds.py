@@ -18,8 +18,15 @@ class main_feed(Feed):
         return BlogEntry.objects.filter(is_page=False)[:10]
 
     def item_description(self, item):
-        return item.text
+        # print self.request
 
+        return item.text_with_abs_url(request=self.request)
+
+    def get_context_data(self, **kwargs):
+        # print 'get_context_data',kwargs
+        context = super(main_feed, self).get_context_data(**kwargs)
+        self.request = kwargs.get('request',{})
+        return context
 
 class CatFeed(Feed):
     def get_object(self, request, tag):
