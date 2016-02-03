@@ -91,6 +91,8 @@ urlpatterns += patterns('blogango.views',
         name='blogango_category_details'),
     url(r'^(?P<category_slug>[-\w]+)/(?P<page>\d+)/$', 'category_details',
         name='blogango_category_details_page'),
+    url(r'^(?P<category_slug>[-\w]+)/(?P<year>\d{4})/(?P<month>\d+)/(?P<slug>[-\w]+)/$', 'details',
+        name='blogango_category_post'),
     url(r'^(?P<category_slug>[-\w]+)/(?P<slug>[-\w]+)/$', 'details',
         name='blogango_category_post'),
 )

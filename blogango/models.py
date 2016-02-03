@@ -155,7 +155,8 @@ class BlogEntry(models.Model):
 
     def get_absolute_url(self):
         if self.category:
-            return reverse('blogango_category_post', kwargs={'category_slug':self.category.slug , 'slug':self.slug})
+            return reverse('blogango_category_post', kwargs={'year': self.created_on.strftime('%Y'),
+                               'month': self.created_on.strftime('%m'), 'category_slug':self.category.slug , 'slug':self.slug})
 
         return reverse('blogango_details',
                        kwargs={'year': self.created_on.strftime('%Y'),

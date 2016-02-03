@@ -317,8 +317,8 @@ class DetailsView(Handle404Mixin, generic.DetailView):
                                       created_on__month=self.kwargs['month'],
                                       slug=self.kwargs['slug'])
         else:
-            # entry = BlogEntry.default.get(is_page=True, slug=self.kwargs['slug'])
-            entry = BlogEntry.default.get( slug=self.kwargs['slug'])
+            entry = BlogEntry.default.get(is_page=True, slug=self.kwargs['slug'])
+            # entry = BlogEntry.default.get( slug=self.kwargs['slug'])
 
         if not entry.is_published:
             if self.request.user.is_staff and 'preview' in self.request.GET:
