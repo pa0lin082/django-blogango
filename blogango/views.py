@@ -459,7 +459,7 @@ class CategoryIndex(generic.TemplateView):
         context['top_entries'] = top_entries
 
         categories = []
-        for cat_obj in BlogCategory.objects.all():
+        for cat_obj in BlogCategory.objects.all().exclude(blogentry__isnull=True):
             cat_obj.previews = cat_obj.blogentry_set.filter(is_published=True).exclude(id__in=[e.id for e in top_entries])[:5]
             categories.append(cat_obj)
 

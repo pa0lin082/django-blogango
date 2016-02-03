@@ -30,12 +30,7 @@ urlpatterns = patterns('blogango.views',
 
     url(r'^search/$', 'search', name='blogango_search'),
 
-    url(r'^(?P<category_slug>[-\w]+)/$', 'category_details',
-        name='blogango_category_details'),
-    url(r'^(?P<category_slug>[-\w]+)/(?P<page>\d+)/$', 'category_details',
-        name='blogango_category_details_page'),
-    url(r'^(?P<category_slug>[-\w]+)/(?P<slug>[-\w]+)/$', 'details',
-        name='blogango_category_post'),
+
 
 
     url(r'^author/(?P<username>[\w.@+-]+)/$', 'author', name='blogango_author_page'),
@@ -84,9 +79,18 @@ urlpatterns += patterns('',
 )
 
 urlpatterns += patterns('blogango.views',
-    url(r'^(?P<slug>[-\w]+)/$', 'details', name='blogango_page_details'),
+    url(r'^page/(?P<slug>[-\w]+)/$', 'details', name='blogango_page_details'),
 )
 
 urlpatterns += patterns('blogango.views',
     url(r'^/search/?$', 'search', name='search_view'),
+)
+
+urlpatterns += patterns('blogango.views',
+    url(r'^(?P<category_slug>[-\w]+)/$', 'category_details',
+        name='blogango_category_details'),
+    url(r'^(?P<category_slug>[-\w]+)/(?P<page>\d+)/$', 'category_details',
+        name='blogango_category_details_page'),
+    url(r'^(?P<category_slug>[-\w]+)/(?P<slug>[-\w]+)/$', 'details',
+        name='blogango_category_post'),
 )

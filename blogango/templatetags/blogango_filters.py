@@ -22,6 +22,8 @@ class BlogangoContext(template.Node):
         blog = Blog.objects.get_blog()
         tags = Tag.objects.annotate(num_tagged_entries=Count('taggit_taggeditem_items')).filter(num_tagged_entries__gt=2)
 
+        # print 'old category = ', context['categories']
+
         categories = context['categories'] if context.has_key('categories') else BlogCategory.objects.all()
         feed_url = reverse('blogango_feed')
         archive_months = _get_archive_months()
