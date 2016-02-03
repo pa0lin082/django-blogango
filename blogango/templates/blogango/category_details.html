@@ -1,0 +1,60 @@
+{% extends 'blogango/base.html' %}
+{% load bootstrap_pagination %}
+
+
+{% block title %}
+    {{block.super}} - {{ tag.name }}
+{% endblock %}
+
+{% block fb_title %}
+    {{block.super}} - {{ tag.name }}
+{% endblock %}
+
+
+{% block description %}'{{ tag.name }}' - I nostri articoli su questo argomento{% endblock %}
+{% block fb_description %}'{{ tag.name }}' - I nostri articoli su questo argomento{% endblock %}
+
+{% block breadcrumbs %}
+    <li><a href="{% url "blogango_index" %}" rel="nofollow">Blog</a></li>
+    <li>{{ category.title }}</li>
+{% endblock %}
+
+
+{% block blog_top_content %}
+    {% if top_entries %}
+        {% include 'blogango/_top_entry_grid.html' with top_entries=top_entries %}
+    {% endif %}
+{% endblock %}
+
+
+{% block blog_content %}
+	{% for entry in entries %}
+	    {% include 'blogango/entry_snippets.html' %}
+	{% empty %}
+	    <div class="leftblock"> 
+	        <h1>No entries with this tag</h1> 
+	        <div class="postcontent">
+	            <p>
+	              <br/>
+	              No entries tagged {{ category.name }}
+	            </p>
+	        </div>
+	    </div>
+	{% endfor %}
+    <div class="clear"></div>
+    {% if page_obj.has_next or page_obj.has_previous %}
+        {% bootstrap_paginate page_obj url_view_name="blogango_category_details_page" url_extra_kwargs=pagination_kwargs %}
+
+{#    <div class="pagination"> #}
+{#        <div class="moreinfo">#}
+{#            {% if page_obj.has_next %}#}
+{#                <a href='{% url "blogango_tag_details_page" tag.slug page_obj.next_page_number %}'>&laquo; Previous Entries</a>#}
+{#            {% endif %}#}
+{#            #}
+{#            {% if page_obj.has_previous %}#}
+{#                <span class='right'><a href='{% url "blogango_tag_details_page" tag.slug page_obj.previous_page_number %}'>Next Entries &raquo;</a></span>#}
+{#            {% endif %}#}
+{#        </div> #}
+{#    </div>#}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends 'blogango/base.html' %}
+{% load bootstrap_pagination %}
+
+{% block breadcrumbs %}
+    <li>Blog</li>
+{% endblock %}
+
+ {% block blog_top_content %}
+
+
+
+     {% include 'blogango/_top_entry_grid.html' with top_entries=top_entries %}
+ {% endblock %}
+
+{% block blog_content %}
+    <!--BLOG POST STARTS-->
+
+    {% for category in categories %}
+        <div class="row">
+            <div class="col-md-12">
+
+                <h4 class="block-title">
+                    <span style="margin-right: 0px;">{{ category.title }}</span>
+                </h4>
+            </div>
+
+            {% for post in category.previews  %}
+
+                {% if forloop.counter == 1 %}
+                    <div class="col-md-6">
+                        <a href="{{ post.get_absolute_url }}" title='{{ post.title }}'>
+                         {% if post.preview_image %}
+                             <img width="100%" class="float-left" itemprop="image" src='{{ post.preview_image }}'>
+                         {% endif %}
+                         <h3 class="flipboard-remove">"{{ post.title }}"</h3>
+                        </a>
+                         <p>{{ post.meta_description }}</p>
+                    </div>
+
+                {% else %}
+                    <div class="col-md-6 mBottom20">
+                        <div class="media">
+                          <div class="media-left">
+                            <a href="{{ post.get_absolute_url }}" title='{{ post.title }}'>
+                              <img width="100" class="media-object" src="{{ post.preview_image_100_70 }}" alt="{{ post.title }}">
+                            </a>
+                          </div>
+                          <div class="media-body">
+                              <a href="{{ post.get_absolute_url }}" title='{{ post.title }}'>
+                                <h4 class="media-heading">{{ post.title }}</h4>
+                              </a>
+{#                              <p>{{ post.meta_description }}</p>#}
+
+
+                          </div>
+                        </div>
+
+
+{#                        <a href="{{ post.get_absolute_url }}" title='{{ post.title }}'>#}
+{#                             {% if post.preview_image %}#}
+{#                                 <img width="100" height="70" class="pull-left" itemprop="image" src='{{ post.preview_image }}'>#}
+{#                             {% endif %}#}
+{#                             <h4 class="pull-left flipboard-remove">"{{ post.title }}"</h4>#}
+{#                        </a>#}
+
+                    </div>
+
+                {% endif %}
+            {% endfor %}
+
+
+
+        </div>
+
+{#        <hr>#}
+{#        {{ c }} : <br>#}
+{#        {% for p in c.previews  %}#}
+{#            {{ p }} , {{ p.preview_image }} <br>#}
+{#        {% endfor %}#}
+{#        {{ c.previews }}#}
+
+    {% endfor %}
+
+{#    {% for entry in entries %}#}
+{#        {% include 'blogango/entry_snippets.html' %}#}
+{##}
+{#    {% empty %}#}
+{#        <div class="leftblock">#}
+{#            <h1>No posts in blog</h1>#}
+{##}
+{#            <div class="postcontent">#}
+{#                <p>#}
+{#                    <br/>You don't have any entries in your blog,#}
+{#                    Create a blog entry at '/admin/blogango/blogentry/add/'.#}
+{#                </p>#}
+{#            </div>#}
+{#        </div>#}
+{#    {% endfor %}#}
+
+
+    <!--BLOG POST ENDS-->
+    <div class="clear"></div>
+    {% if page_obj.has_next or page_obj.has_previous %}
+        {% bootstrap_paginate page_obj url_view_name="blogango_page" %}
+{#        <div class="pagination">#}
+{#            <div class="moreinfo">#}
+{#                {% if page_obj.has_next %}#}
+{#                    <a href='{% url "blogango_page" page_obj.next_page_number %}'>&laquo; Previous Entries</a>#}
+{#                {% endif %}#}
+{##}
+{#            <span class="current">#}
+{#            Page {{ page_obj.number }} of {{ paginator.num_pages }}.#}
+{#        </span>#}
+{##}
+{#                {% if page_obj.has_previous %}#}
+{#                    <span class='right'><a href='{% url "blogango_page" page_obj.previous_page_number %}'>Next#}
+{#                        Entries &raquo;</a></span>#}
+{#                {% endif %}#}
+{#            </div>#}
+{#        </div>#}
+    {% endif %}
+
+
+
+
+
+{% endblock %}

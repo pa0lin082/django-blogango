@@ -1,0 +1,167 @@
+ <style type="text/css">
+
+     .post-preview-grid-item{
+
+     }
+     .post-preview-grid-item-image-container {
+         width: 100%;
+         height: 100%;
+{#         border: 2px solid red !important;#}
+         background-size: cover ;
+         position: absolute;
+          -webkit-transition: transform 0.3s ease;
+        -moz-transition: transform 0.3s ease;
+        -ms-transition: transform 0.3s ease;
+        -o-transition: transform 0.3s ease;
+        transition: transform 0.3s ease;
+     }
+     .post-preview-grid-item-image-container::before{
+
+        bottom: 0;
+        content: "";
+        display: block;
+        height: 70%;
+        width: 100%;
+        position: absolute;
+        z-index: 1;
+        background: -moz-linear-gradient(top,rgba(0,0,0,0) 0%,rgba(0,0,0,.7) 100%);
+        background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,rgba(0,0,0,0)),color-stop(100%,rgba(0,0,0,.7)));
+        background: -webkit-linear-gradient(top,rgba(0,0,0,0) 0%,rgba(0,0,0,.7) 100%);
+        background: -o-linear-gradient(top,rgba(0,0,0,0) 0%,rgba(0,0,0,.7) 100%);
+        background: -ms-linear-gradient(top,rgba(0,0,0,0) 0%,rgba(0,0,0,.7) 100%);
+        background: linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,.7) 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#b3000000', GradientType=0);
+     }
+
+     .post-preview-grid-item:hover .post-preview-grid-item-image-container{
+            transform: scale(1.1)
+    }
+
+
+
+
+     .post-preview-grid-item-info-cotainer{
+         position: absolute;
+         bottom: 0px;
+         margin: 10px;
+         color: white;
+         z-index: 100;
+     }
+     .post-preview-grid-item-info-cotainer a {
+         color: white;
+     }
+
+     .post-category{
+         background-color: rgba(0, 0, 0, 0.69);
+        padding: 5px 15px;
+        color: white;
+        text-transform: uppercase;
+        font-size: 0.8em;
+             -webkit-transition: background-color .3s ease;
+    -moz-transition: background-color .3s ease;
+    -o-transition: background-color .3s ease;
+    transition: background-color .3s ease;
+     }
+
+     .post-preview-grid-item:hover .post-category{
+         background-color: rgb(193, 41, 45);;
+     }
+
+    .block-title {
+        border-bottom: 2px solid #AFCCE6;
+    }
+    .block-title span{
+        background-color: #AFCCE6;
+        padding: 0px 15px;
+        color: white;
+        text-transform: uppercase;
+    }
+
+     </style>
+
+
+
+   <div class="row mTop20">
+    {% if top_entries|length == 4 %}
+            {% for post in  top_entries %}
+                <div class="p0
+                    {% if forloop.counter == 1 or  forloop.counter == 2 %}
+                        col-md-6
+                    {% else %}
+                        col-md-3 col-sm-6
+                    {% endif %}
+                ">
+                    <div class="embed-responsive
+                    {% if forloop.counter == 2 %}
+                        embed-responsive-8by3
+                    {% else %}
+                        embed-responsive-4by3
+                    {% endif %}
+
+                    ">
+                        <div class="embed-responsive-item post-preview-grid-item" >
+                            <a href="{{ post.get_absolute_url }}"  title="{{ post.title }}" rel="bookmark">
+                                <div class="post-preview-grid-item-image-container"
+                                        style="
+                                            background:url({{ post.preview_image }}) no-repeat center center;
+                                                background-size: cover ;
+                                        ">
+                                </div>
+                            </a>
+
+
+                            <div class="post-preview-grid-item-info-cotainer">
+                                <a title="{{ post.category.title }}" href="{% url 'blogango_category_details' post.category.slug  %}" class="post-category post-category-{{ post.category.slug }}">{{ post.category }}</a>
+
+                                <h3>
+                                    <a href="{{ post.get_absolute_url }}" title="{{ post.title }}" rel="bookmark">
+                                    {{ post.title }}
+                                    </a>
+                                </h3>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% elif top_entries|length == 3 %}
+
+        {% for post in  top_entries %}
+                <div class="p0
+                    {% if forloop.counter == 1  %}
+                        col-md-8
+                    {% else %}
+                        col-md-4
+                    {% endif %}
+                ">
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <div class="embed-responsive-item post-preview-grid-item" >
+                            <a href="{{ post.get_absolute_url }}"  title="{{ post.title }}" rel="bookmark">
+                                <div class="post-preview-grid-item-image-container"
+                                        style="
+                                            background:url({{ post.preview_image }}) no-repeat center center;
+                                                background-size: cover ;
+                                        ">
+                                </div>
+                            </a>
+
+
+                            <div class="post-preview-grid-item-info-cotainer">
+                                <a title="{{ post.category.title }}" href="{% url 'blogango_category_details' post.category.slug  %}" class="post-category post-category-{{ post.category.slug }}">{{ post.category }}</a>
+
+                                <h3>
+                                    <a href="{{ post.get_absolute_url }}" title="{{ post.title }}" rel="bookmark">
+                                    {{ post.title }}
+                                    </a>
+                                </h3>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+
+   {% endif %}
+
+     </div>

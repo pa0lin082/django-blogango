@@ -87,7 +87,7 @@ class BlogEntry(models.Model):
     slug = models.SlugField(max_length=100)
     text = MarkupField(default_markup_type=getattr(settings,
                                                    'DEFAULT_MARKUP_TYPE',
-                                                   'plain'),
+                                                   'html'),
                        markup_choices=getattr(settings, "MARKUP_RENDERERS",
                                               DEFAULT_MARKUP_TYPES))
     summary = models.TextField()
@@ -102,6 +102,8 @@ class BlogEntry(models.Model):
     meta_keywords = models.TextField(blank=True, null=True)
     meta_description = models.TextField(blank=True, null=True)
 
+    category = models.ForeignKey('BlogCategory', null=True, blank=True)
+
     tags = TaggableManager()
 
     default = models.Manager()
@@ -110,6 +112,8 @@ class BlogEntry(models.Model):
     class Meta:
         ordering = ['-created_on']
         verbose_name_plural = 'Blog entries'
+
+
 
     def __unicode__(self):
         return self.title
@@ -150,6 +154,9 @@ class BlogEntry(models.Model):
         return initial_slug
 
     def get_absolute_url(self):
+        if self.category:
+            return reverse('blogango_category_post', kwargs={'category_slug':self.category.slug , 'slug':self.slug})
+
         return reverse('blogango_details',
                        kwargs={'year': self.created_on.strftime('%Y'),
                                'month': self.created_on.strftime('%m'),
@@ -181,35 +188,38 @@ class BlogEntry(models.Model):
         ).order_by('-created_on')
         return cmnts
 
-    def preview_image(self):
-        page = BeautifulSoup(self.text.rendered)
-        images = page.findAll('img')
-        if len(images):
-            src_image = images[0].get('src')
-            src_image_path = None
+    def preview_image(self, width=600, height=200):
+        try:
+            page = BeautifulSoup(self.text.rendered)
+            images = page.findAll('img')
+            if len(images):
+                src_image = images[0].get('src')
+                src_image_path = None
 
-            url_validate = URLValidator()
-            try:
-                url_validate(src_image)
-                src_image_path = src_image
-            except Exception as e:
-                print e
+                url_validate = URLValidator()
+                try:
+                    url_validate(src_image)
+                    src_image_path = src_image
+                except Exception as e:
+                    pass
 
-            if not src_image_path:
-                src_image = src_image.replace(settings.MEDIA_URL,'')
-                src_image_path = os.path.join(settings.MEDIA_ROOT,src_image)
-                # src_image_path = settings.MEDIA_ROOT + src_image
-                src_image_path = open(src_image_path)
+                if not src_image_path:
+                    src_image = src_image.replace(settings.MEDIA_URL,'')
+                    src_image_path = os.path.join(settings.MEDIA_ROOT,src_image)
+                    # src_image_path = settings.MEDIA_ROOT + src_image
+                    src_image_path = open(src_image_path)
 
-            try:
-                im = get_thumbnail(src_image_path, '600x200', crop='center', quality=99)
-                return im.url
+                try:
+                    im = get_thumbnail(src_image_path, '%sx%s' % (width, height), crop='center', quality=99)
+                    return im.url
 
-            except OperationalError:
-                # raise Exception('No solr activated')
-                return None
-            except Exception as e:
-                print e
+                except OperationalError:
+                    # raise Exception('No solr activated')
+                    return None
+                except Exception as e:
+                    print e
+        except:
+            return None
 
         return None
 
@@ -252,6 +262,32 @@ class BlogEntry(models.Model):
 
 
         return page.renderContents()
+
+
+    def thumbnail_html_image(self, size=80):
+        img_url = self.preview_image(width=80, height=80)
+        if img_url:
+            img = "<img width='80' src='%s'> " % img_url
+            return img
+        else:
+            return None
+
+    thumbnail_html_image.allow_tags = True
+
+
+    def preview_image_100_70(self):
+        return self.preview_image(width=100,height=70)
+
+
+
+class BlogCategory(models.Model):
+    title = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=100)
+    parent = models.ForeignKey('BlogCategory', null=True, blank=True)
+
+    def __unicode__(self):
+        return self.title
+
 
 
 class CommentManager(models.Manager):

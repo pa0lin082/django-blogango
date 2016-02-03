@@ -13,16 +13,31 @@ sitemaps = {
 }
 
 urlpatterns = patterns('blogango.views',
+    url(r'^$', 'category_index', name="category_index"),
     url(r'^$', 'index', name="blogango_index"),
+
     url(r'^install/$', 'install_blog', name='blogango_install'),
     url(r'^page/(?P<page>\d+)/$', 'index',  name='blogango_page'),
     url(r'^(?P<year>\d{4})/(?P<month>\d+)/(?P<slug>[-\w]+)/$', 'details',
         name='blogango_details'),
     url(r'^blogroll/$', 'create_blogroll', name='blogango_blogroll'),
+
+
     url(r'^tag/(?P<tag_slug>[-\w]+)/$', 'tag_details',
         name='blogango_tag_details'),
     url(r'^tag/(?P<tag_slug>[-\w]+)/(?P<page>\d+)/$', 'tag_details',
         name='blogango_tag_details_page'),
+
+    url(r'^search/$', 'search', name='blogango_search'),
+
+    url(r'^(?P<category_slug>[-\w]+)/$', 'category_details',
+        name='blogango_category_details'),
+    url(r'^(?P<category_slug>[-\w]+)/(?P<page>\d+)/$', 'category_details',
+        name='blogango_category_details_page'),
+    url(r'^(?P<category_slug>[-\w]+)/(?P<slug>[-\w]+)/$', 'details',
+        name='blogango_category_post'),
+
+
     url(r'^author/(?P<username>[\w.@+-]+)/$', 'author', name='blogango_author_page'),
 
     url(r'^admin/$', 'admin_dashboard', name='blogango_admin_dashboard'),
@@ -70,4 +85,8 @@ urlpatterns += patterns('',
 
 urlpatterns += patterns('blogango.views',
     url(r'^(?P<slug>[-\w]+)/$', 'details', name='blogango_page_details'),
+)
+
+urlpatterns += patterns('blogango.views',
+    url(r'^/search/?$', 'search', name='search_view'),
 )

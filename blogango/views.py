@@ -18,18 +18,23 @@ from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.encoding import smart_str
-from django.db.models import Q
+from django.db.models import Q, query
 from django.views.decorators.http import require_POST
 import json
 from django.views.generic.dates import MonthArchiveView
 from django.views import generic
 from taggit.models import Tag
 
-from blogango.models import Blog, BlogEntry, Comment, BlogRoll, Reaction
+from blogango.models import Blog, BlogEntry, Comment, BlogRoll, Reaction, BlogCategory
 from blogango import forms as bforms
 from blogango.conf.settings import AKISMET_COMMENT, AKISMET_API_KEY
 from blogango.akismet import Akismet, AkismetError
 
+# from haystack.views import SearchView
+# from haystack.views import ModelSearchForm
+from haystack.query import SearchQuerySet, EmptySearchQuerySet
+from haystack.inputs import AutoQuery
+from django.core.paginator import Paginator, InvalidPage
 
 def handle404(view_function):
     def wrapper(*args, **kwargs):
@@ -253,6 +258,7 @@ class IndexView(generic.ListView):
         blog = Blog.objects.get_blog()
         if not blog:
             return HttpResponseRedirect(reverse('blogango_install'))
+
         self.kwargs['blog'] = blog
         return super(IndexView, self).get(request, *args, **kwargs)
 
@@ -305,12 +311,14 @@ class DetailsView(Handle404Mixin, generic.DetailView):
         return super(DetailsView, self).get(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
+        print 'Detail get objects', self.kwargs
         if 'year' in self.kwargs:
             entry = BlogEntry.default.get(created_on__year=self.kwargs['year'],
                                       created_on__month=self.kwargs['month'],
                                       slug=self.kwargs['slug'])
         else:
-            entry = BlogEntry.default.get(is_page=True, slug=self.kwargs['slug'])
+            # entry = BlogEntry.default.get(is_page=True, slug=self.kwargs['slug'])
+            entry = BlogEntry.default.get( slug=self.kwargs['slug'])
 
         if not entry.is_published:
             if self.request.user.is_staff and 'preview' in self.request.GET:
@@ -331,6 +339,7 @@ class DetailsView(Handle404Mixin, generic.DetailView):
             init_data['email'] = self.request.session.get("email", "")
             init_data['url'] = self.request.session.get("url", "")
         entry = context['entry']
+        context['category'] = entry.category
         comment_f = bforms.CommentForm(initial=init_data)
         comments = Comment.objects.filter(comment_for=entry, is_spam=False)
         reactions = Reaction.objects.filter(comment_for=entry)
@@ -394,9 +403,81 @@ class TagDetails(generic.ListView):
         context = super(TagDetails, self).get_context_data(**kwargs)
         context['tag'] = self.kwargs['tag']
         context.update(_get_sidebar_objects(self.request))
+        context['pagination_kwargs'] = {'tag_slug':self.kwargs['tag'].slug}
         return context
 
 tag_details = TagDetails.as_view()
+
+class CategoryDetails(generic.ListView):
+    template_name = 'blogango/category_details.html'
+    context_object_name = 'entries'
+
+    def get_queryset(self):
+        category = get_object_or_404(BlogCategory, slug= self.kwargs['category_slug'])
+        self.kwargs['category'] = category
+        category_entries = BlogEntry.objects.filter(is_published=True, category__in=[category])
+        return category_entries
+
+    def get_paginate_by(self, queryset):
+        paginate_by = Blog.objects.get_blog().entries_per_page
+        return paginate_by
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(CategoryDetails, self).get_context_data(**kwargs)
+        context['category'] = self.kwargs['category']
+        context.update(_get_sidebar_objects(self.request, excluded_entry=context['entries']))
+        context['pagination_kwargs'] = {'category_slug':self.kwargs['category'].slug}
+
+        if context['page_obj'].number == 1 and len(context['entries']) > 3:
+            context['top_entries'] = context['entries'][:3]
+            context['entries'] = context['entries'][3:]
+
+        return context
+
+category_details = CategoryDetails.as_view()
+
+
+class CategoryIndex(generic.TemplateView):
+    template_name = 'blogango/category_index.html'
+    # context_object_name = 'entries'
+
+    # def get_queryset(self):
+    #     category = get_object_or_404(BlogCategory, slug= self.kwargs['category_slug'])
+    #     self.kwargs['category'] = category
+    #     category_entries = BlogEntry.objects.filter(is_published=True, category__in=[category])
+    #     return category_entries
+    #
+    # def get_paginate_by(self, queryset):
+    #     paginate_by = Blog.objects.get_blog().entries_per_page
+    #     return paginate_by
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(CategoryIndex, self).get_context_data(**kwargs)
+
+
+        top_entries = BlogEntry.objects.filter(is_page=False)[:4]
+        context['top_entries'] = top_entries
+
+        categories = []
+        for cat_obj in BlogCategory.objects.all():
+            cat_obj.previews = cat_obj.blogentry_set.filter(is_published=True).exclude(id__in=[e.id for e in top_entries])[:5]
+            categories.append(cat_obj)
+
+        context['categories'] = categories
+
+        exclude_list_id = [e.id for e in top_entries]
+        [exclude_list_id.extend(cat_obj.previews.values_list('id', flat=True)) for cat_obj in categories]
+
+        # print 'exclude_list_id:',exclude_list_id
+
+        # context['category'] = self.kwargs['category']
+        context.update(_get_sidebar_objects(self.request, excluded_entry=exclude_list_id))
+        # context['pagination_kwargs'] = {'category_slug':self.kwargs['category'].slug}
+        return context
+
+category_index = CategoryIndex.as_view()
+
+
 
 class InstallBlog(generic.TemplateView):
     template_name = 'blogango/install.html'
@@ -478,14 +559,20 @@ def render(template, request, payload):
                               context_instance=RequestContext(request),)
 
 
-def _get_sidebar_objects(request):
+def _get_sidebar_objects(request, excluded_entry=None):
     """Gets the objects which are always displayed in the sidebar"""
     blog = Blog.objects.get_blog()
     if not blog:
         return {}
-    recents = \
-        BlogEntry.objects.filter(is_page=False,
-                                 is_published=True).order_by('-created_on')[:blog.recents]
+    recents = BlogEntry.objects.filter(is_page=False,
+                                 is_published=True).order_by('-created_on')
+    if excluded_entry:
+        if isinstance(excluded_entry, query.QuerySet):
+            recents = recents.exclude(id__in=excluded_entry.values_list('id', flat=True))
+        elif isinstance(excluded_entry, list):
+            recents = recents.exclude(id__in=excluded_entry)
+
+    recents = recents[:blog.recents]
     blogroll = BlogRoll.objects.filter(is_published=True)
     return {'blog': blog,
             'recents': recents,
@@ -514,3 +601,61 @@ def _generic_form_display(request, form_class):
             return HttpResponseRedirect('.')
     payload = {"install_form": form_inst}
     return render('blogango/install.html', request, payload)
+
+
+class BlogSearchView(generic.TemplateView, generic.View):
+    """My custom search view."""
+    template_name = 'blogango/search.html'
+    # form = ModelSearchForm
+
+
+    def post(self, request, *args, **kwargs):
+        print 'post',args, kwargs
+        context = self.get_context_data(*args, **kwargs)
+
+        if request.POST.get('q'):
+            sqs = SearchQuerySet()
+            clean_query = sqs.query.clean(request.POST.get('q'))
+            results = SearchQuerySet().models(BlogEntry).filter(content__contains=AutoQuery(clean_query))
+            print 'results:',results
+            paginator = Paginator(results, 10)
+            try:
+                page = paginator.page(int(request.GET.get('page', 1)))
+            except InvalidPage:
+                raise Http404("No such page of results!")
+
+            context = {
+                # 'form': form,
+                'clean_query':clean_query,
+                'page': page,
+                'paginator': paginator,
+                'query': query,
+                'search_suggestion': None,
+            }
+
+            if results.query.backend.include_spelling:
+                context['search_suggestion'] = results.spelling_suggestion(AutoQuery(clean_query))
+
+            context.update(_get_sidebar_objects(self.request, excluded_entry=[]))
+
+
+        return render_to_response(self.template_name, RequestContext(request, context))
+        # return super(BlogSearchView, self).post(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        print 'get',args, kwargs
+        return super(BlogSearchView, self).get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = super(BlogSearchView, self).get_queryset()
+        # further filter queryset based on some set of criteria
+        return queryset
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(BlogSearchView, self).get_context_data(*args, **kwargs)
+
+
+        # do something
+        return context
+
+search = BlogSearchView.as_view()

@@ -7,7 +7,7 @@ from django.db.models import Count
 
 from taggit.models import Tag, TaggedItem
 from blogango.views import _get_archive_months
-from blogango.models import Blog, BlogEntry
+from blogango.models import Blog, BlogEntry, BlogCategory
 
 register = template.Library()
 
@@ -21,6 +21,8 @@ class BlogangoContext(template.Node):
         #only one blog must be present
         blog = Blog.objects.get_blog()
         tags = Tag.objects.annotate(num_tagged_entries=Count('taggit_taggeditem_items')).filter(num_tagged_entries__gt=2)
+
+        categories = context['categories'] if context.has_key('categories') else BlogCategory.objects.all()
         feed_url = reverse('blogango_feed')
         archive_months = _get_archive_months()
         site = Site.objects.get_current()
@@ -31,6 +33,7 @@ class BlogangoContext(template.Node):
                          'archive_months': archive_months,
                          'blog': blog,
                          'site': site,
+                         'categories': categories
                          }
 
         # print extra_context

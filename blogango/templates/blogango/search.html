@@ -1,0 +1,70 @@
+{% extends 'blogango/base.html' %}
+{% load highlight %}
+
+{% block blog_content %}
+    <h2 class="text-gray">Ricerca per: {{ clean_query }}</h2>
+
+        {% if not page.object_list and search_suggestion  %}
+            <form method="post" action="{% url 'blogango_search' %}" class="" role="search" id='suggestion_form'>
+                     {% csrf_token %}
+                     <div class="form-group">
+                         <input name='q' type="hidden" class="form-control" placeholder="Search" value="{{ search_suggestion }}">
+                     </div>
+                        <h3>Forse cercavi <a href="javascript: document.getElementById('suggestion_form').submit();" class="">{{ search_suggestion }}</a></h3>
+
+                 </form>
+
+
+        {% endif %}
+        {% if query %}
+
+            {% for result in page.object_list %}
+
+                {% with result.object as post%}
+
+                                   <div class="col-md-6 mBottom20">
+                        <div class="media">
+                          <div class="media-left">
+                            <a href="{{ post.get_absolute_url }}" title='{{ post.title }}'>
+                              <img width="100" class="media-object" src="{{ post.preview_image_100_70 }}" alt="{{ post.title }}">
+                            </a>
+                          </div>
+                          <div class="media-body">
+                              <a href="{{ post.get_absolute_url }}" title='{{ post.title }}'>
+                                <h4 class="media-heading">{{ post.title }}</h4>
+                              </a>
+                              <p>{{ post.meta_description }}</p>
+
+
+
+                          </div>
+                        </div>
+
+
+{#                        <a href="{{ post.get_absolute_url }}" title='{{ post.title }}'>#}
+{#                             {% if post.preview_image %}#}
+{#                                 <img width="100" height="70" class="pull-left" itemprop="image" src='{{ post.preview_image }}'>#}
+{#                             {% endif %}#}
+{#                             <h4 class="pull-left flipboard-remove">"{{ post.title }}"</h4>#}
+{#                        </a>#}
+
+                    </div>
+                {% endwith %}
+
+
+            {% empty %}
+                <p>No results found.</p>
+            {% endfor %}
+
+            {% if page.has_previous or page.has_next %}
+                <div>
+                    {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
+                    |
+                    {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            {# Show some example queries to run, maybe query syntax, something else? #}
+        {% endif %}
+    </form>
+{% endblock %}
