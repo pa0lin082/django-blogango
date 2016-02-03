@@ -111,8 +111,9 @@
 
 
                             <div class="post-preview-grid-item-info-cotainer">
+                                {% if post.category %}
                                 <a title="{{ post.category.title }}" href="{% url 'blogango_category_details' post.category.slug  %}" class="post-category post-category-{{ post.category.slug }}">{{ post.category }}</a>
-
+                                {% endif %}
                                 <h3>
                                     <a href="{{ post.get_absolute_url }}" title="{{ post.title }}" rel="bookmark">
                                     {{ post.title }}
@@ -147,8 +148,9 @@
 
 
                             <div class="post-preview-grid-item-info-cotainer">
+                                {% if post.category %}
                                 <a title="{{ post.category.title }}" href="{% url 'blogango_category_details' post.category.slug  %}" class="post-category post-category-{{ post.category.slug }}">{{ post.category }}</a>
-
+                                {% endif %}
                                 <h3>
                                     <a href="{{ post.get_absolute_url }}" title="{{ post.title }}" rel="bookmark">
                                     {{ post.title }}
