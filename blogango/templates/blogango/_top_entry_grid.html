@@ -64,24 +64,32 @@
      }
 
      .post-preview-grid-item:hover .post-category{
-         background-color: rgb(193, 41, 45);;
+         background-color: #e85c00;
      }
 
     .block-title {
-        border-bottom: 2px solid #AFCCE6;
+        border-bottom: 2px solid #e85c00;
     }
     .block-title span{
-        background-color: #AFCCE6;
+        background-color: #e85c00;
         padding: 0px 15px;
         color: white;
         text-transform: uppercase;
+    }
+
+    @media (min-width: 769px){
+
+        .grid-container{
+            margin-right: 0px;
+            margin-left: 0px;
+        }
     }
 
      </style>
 
 
 
-   <div class="row mTop20">
+   <div class="row mTop20 grid-container">
     {% if top_entries|length == 4 %}
             {% for post in  top_entries %}
                 <div class="p0

@@ -8,8 +8,12 @@
  {% block blog_top_content %}
 
 
+{#    <div class="row">#}
+{#    <div class="col-md-12">#}
 
      {% include 'blogango/_top_entry_grid.html' with top_entries=top_entries %}
+{#    </div>#}
+{#    </div>#}
  {% endblock %}
 
 {% block blog_content %}
@@ -20,7 +24,11 @@
             <div class="col-md-12">
 
                 <h4 class="block-title">
-                    <span style="margin-right: 0px;">{{ category.title }}</span>
+                    <a title="{{ category.title }}" href="{% url 'blogango_category_details' category.slug  %}" class="">
+                        <span style="margin-right: 0px;">
+                            {{ category.title }}
+                        </span>
+                    </a>
                 </h4>
             </div>
 
