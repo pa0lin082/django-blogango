@@ -21,7 +21,7 @@ class MySimplerXMLGenerator(SimplerXMLGenerator):
         self.endElement(name)
 
     def characters(self, content, escaped=True):
-        print 'characters: ',escaped, content
+        # print 'characters: ',escaped, content
         if not isinstance(content, unicode):
             content = unicode(content, self._encoding)
         if escaped:
