@@ -116,11 +116,11 @@ class main_feed(Feed):
 
     def item_description(self, item):
         # print self.request
-        # return item.meta_description
+        return item.meta_description
         # return 'desc'
         # return item.text_with_abs_url(request=self.request)
         # return "<![CDATA[%s]]>" % item.text_with_abs_url(request=self.request)
-        return "<![CDATA[%s]]>" % item.meta_description
+        # return "<![CDATA[%s]]>" % item.meta_description
 
     def get_context_data(self, **kwargs):
         # print 'get_context_data',kwargs
