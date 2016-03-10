@@ -189,7 +189,11 @@ class BlogEntry(models.Model):
         ).order_by('-created_on')
         return cmnts
 
-    def preview_image(self, width=600, height=200):
+    def preview_image(self, width=600, height=200, request=None, absolute=False):
+
+
+
+
         try:
             page = BeautifulSoup(self.text.rendered)
             images = page.findAll('img')
@@ -211,8 +215,15 @@ class BlogEntry(models.Model):
                     src_image_path = open(src_image_path)
 
                 try:
-                    im = get_thumbnail(src_image_path, '%sx%s' % (width, height), crop='center', quality=99)
-                    return im.url
+                    if width and height:
+                        im = get_thumbnail(src_image_path, '%sx%s' % (width, height), crop='center', quality=99)
+                    elif width:
+                        im = get_thumbnail(src_image_path, '%s' % (width), crop='center', quality=99)
+
+                    if request and absolute:
+                        return request.build_absolute_uri(im.url)
+                    else:
+                        return im.url
 
                 except OperationalError:
                     # raise Exception('No solr activated')
