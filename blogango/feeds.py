@@ -80,8 +80,8 @@ class main_feed(Feed):
     #         # 'content:encoded': content_encoded
     #     }
 
-    # def item_enclosure_url(self, item):
-    #     return item.preview_image(width=80, height=80)
+    def item_enclosure_url(self, item):
+        return item.preview_image(width=400, height=None, request=self.request, absolute=True)
 
     def item_categories(self,item):
         if item.category:
