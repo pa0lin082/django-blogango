@@ -57,7 +57,7 @@ class MyRssFeedGenerator(Rss201rev2Feed):
             handler.addQuickElement(u'content:encoded', item['content_encoded'], escaped=False)
         if item.has_key('media_content') and item['media_content'] is not None:
             # handler.addQuickElement("media:content", item['media_content'])
-            handler.addQuickElement(u'media:content', '', {"url": item['media_content']})
+            handler.addQuickElement(u'media:content', '', {"url": item['media_content'], "medium":"image"})
 
 
 class main_feed(Feed):
