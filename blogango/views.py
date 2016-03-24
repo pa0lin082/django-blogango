@@ -327,6 +327,12 @@ class DetailsView(Handle404Mixin, generic.DetailView):
                 raise Http404
         return entry
 
+    def get_template_names(self):
+        if self.object.is_page:
+            return ['blogango/page_detail.html']
+
+        return super(DetailsView, self).get_template_names()
+
     def get_context_data(self, **kwargs):
         context = super(DetailsView, self).get_context_data(**kwargs)
 
