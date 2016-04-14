@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from django.db import models
 from django.db.utils import OperationalError
+from django.utils import timezone
 
 from django.conf import settings
 from django.template.defaultfilters import slugify
@@ -62,7 +63,7 @@ class BlogPublishedManager(models.Manager):
     def get_queryset(self):
         return super(BlogPublishedManager, self).get_queryset().filter(
             is_published=True,
-            publish_date__lte=datetime.now())
+            publish_date__lte=timezone.now())
 
 
 class BlogEntry(models.Model):
